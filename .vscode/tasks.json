@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Maven: 编译后端",
+            "type": "shell",
+            "command": "mvn",
+            "args": [
+                "-DskipTests",
+                "package"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

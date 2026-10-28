@@ -1,0 +1,11 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "D:\\develop\\Java\\jdk-21",
+            "default": true
+        }
+    ],
+    "files.encoding": "utf8"
+}

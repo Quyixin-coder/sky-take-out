@@ -1,0 +1,11 @@
+**/target/
+.idea
+*.iml
+*.class
+*Test.java
+**/test/
+**/logs/
+**/temp/
+*.log
+*.pid
+WeiXinApp/project.private.config.json

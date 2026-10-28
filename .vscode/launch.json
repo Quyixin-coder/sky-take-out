@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "运行 SkyApplication",
+            "request": "launch",
+            "mainClass": "com.sky.SkyApplication",
+            "vmArgs": "-Dfile.encoding=UTF-8",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
