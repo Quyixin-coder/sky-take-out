@@ -9,3 +9,5 @@
 *.log
 *.pid
 WeiXinApp/project.private.config.json
+uploads/
+application-local.yml

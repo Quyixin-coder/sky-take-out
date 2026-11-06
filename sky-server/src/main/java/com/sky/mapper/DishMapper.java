@@ -48,7 +48,7 @@ public interface DishMapper {
      * @return
      */
     @Select("select * from dish where id = #{id}")
-    Dish getById(Long id);
+    Dish getById(Long id);//执行SQL
 
     /**
      * 根据分类ID查询菜品

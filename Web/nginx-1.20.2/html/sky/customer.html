@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>苍穹外卖顾客体验</title>
+  <style>
+    :root {
+      --yellow: #ffc200;
+      --dark: #252830;
+      --muted: #717780;
+      --line: #eceef1;
+      --bg: #f5f6f7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #20242a;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+    header {
+      height: 70px;
+      background: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    .header-user { font-weight: 700; }
+    .layout {
+      display: grid;
+      grid-template-columns: 190px 1fr 300px;
+      gap: 18px;
+      padding: 18px;
+      min-height: calc(100vh - 70px);
+    }
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .05);
+    }
+    .category {
+      padding: 13px 16px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .category:hover { background: #f4f5f7; }
+    .category.active {
+      background: var(--yellow);
+      font-weight: 700;
+    }
+    .dish-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .dish-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .dish-card img {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      background: #eef0f2;
+    }
+    .dish-body { padding: 12px; flex: 1; }
+    .dish-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .price { color: #e33b32; white-space: nowrap; }
+    .description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 40px;
+      margin: 8px 0;
+    }
+    .flavors { color: #855f00; font-size: 12px; line-height: 1.6; }
+    .add {
+      margin-top: 10px;
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--yellow);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .cart-item {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      font-size: 14px;
+    }
+    .cart-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 5px;
+      color: var(--muted);
+    }
+    .qty-button {
+      border: 1px solid #cfd3d8;
+      background: white;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+    .clear {
+      width: 100%;
+      border: 0;
+      padding: 10px;
+      margin-top: 12px;
+      border-radius: 8px;
+      background: var(--dark);
+      color: white;
+      cursor: pointer;
+    }
+    .message {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #fff5db;
+      color: #8a6500;
+      min-height: 40px;
+    }
+    .login-box {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 28, 33, .68);
+      display: grid;
+      place-items: center;
+      z-index: 20;
+    }
+    .login-card {
+      width: min(420px, calc(100% - 30px));
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .login-card h2 { margin-top: 0; }
+    .login-card input {
+      width: 100%;
+      padding: 11px;
+      margin: 10px 0;
+      border: 1px solid #cbd0d6;
+      border-radius: 8px;
+    }
+    .login-card button {
+      width: 100%;
+      border: 0;
+      padding: 11px;
+      border-radius: 8px;
+      background: var(--yellow);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 120px 1fr; }
+      .cart-panel { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>苍穹外卖 · 顾客体验</h1>
+  <div class="header-user" id="headerUser">未登录</div>
+</header>
+
+<div class="layout">
+  <aside class="panel">
+    <h3>菜品分类</h3>
+    <div id="categories"></div>
+  </aside>
+
+  <main class="panel">
+    <p class="message" id="message">请先登录</p>
+    <div class="dish-grid" id="dishes"></div>
+  </main>
+
+  <aside class="panel cart-panel">
+    <h3>购物车</h3>
+    <div id="cartList">购物车为空</div>
+    <button class="clear" id="clearCart">清空购物车</button>
+  </aside>
+</div>
+
+<div class="login-box" id="loginBox">
+  <div class="login-card">
+    <h2>用户登录</h2>
+    <p>本地开发使用模拟微信登录。</p>
+    <input id="loginCode" value="local:demo-user-001">
+    <button id="loginButton">登录并进入点餐</button>
+  </div>
+</div>
+
+<script>
+  const state = {
+    token: localStorage.getItem("userToken"),
+    user: JSON.parse(localStorage.getItem("userInfo") || "null"),
+    categories: [],
+    dishes: []
+  };
+
+  const $ = (selector) => document.querySelector(selector);
+  const escapeHtml = (value) => String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+  function setMessage(text) {
+    $("#message").textContent = text;
+  }
+
+  async function api(url, options = {}) {
+    const headers = { ...(options.headers || {}) };
+    if (state.token) {
+      headers.authentication = state.token;
+    }
+
+    const response = await fetch(url, { ...options, headers });
+    if (response.status === 401) {
+      logout();
+      throw new Error("登录已失效，请重新登录");
+    }
+
+    const body = await response.json();
+    if (body.code !== 1) {
+      throw new Error(body.msg || "请求失败");
+    }
+    return body.data;
+  }
+
+  async function login() {
+    try {
+      const result = await api("/user/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: $("#loginCode").value.trim() })
+      });
+      state.token = result.token;
+      state.user = result;
+      localStorage.setItem("userToken", result.token);
+      localStorage.setItem("userInfo", JSON.stringify(result));
+      $("#loginBox").classList.add("hidden");
+      $("#headerUser").textContent = `用户 ${result.id}`;
+      await loadCategories();
+      await loadCart();
+      setMessage("请选择左侧分类，然后开始点餐");
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  async function loadCategories() {
+    state.categories = await api("/user/category/list?type=1");
+    $("#categories").innerHTML = state.categories.map((item, index) => `
+      <div class="category ${index === 0 ? "active" : ""}"
+           data-id="${item.id}">${escapeHtml(item.name)}</div>
+    `).join("");
+
+    document.querySelectorAll(".category").forEach((element) => {
+      element.addEventListener("click", async () => {
+        document.querySelectorAll(".category")
+          .forEach((item) => item.classList.remove("active"));
+        element.classList.add("active");
+        await loadDishes(Number(element.dataset.id));
+      });
+    });
+
+    if (state.categories.length > 0) {
+      await loadDishes(state.categories[0].id);
+    }
+  }
+
+  async function loadDishes(categoryId) {
+    setMessage("正在加载菜品...");
+    state.dishes = await api(`/user/dish/list?categoryId=${categoryId}`);
+    renderDishes();
+    setMessage(`当前分类共有 ${state.dishes.length} 道起售菜品`);
+  }
+
+  function renderDishes() {
+    $("#dishes").innerHTML = state.dishes.map((dish) => {
+      const flavorText = (dish.flavors || []).map((flavor) => {
+        let options = [];
+        try {
+          options = JSON.parse(flavor.value);
+        } catch {
+          options = [flavor.value];
+        }
+        return `${escapeHtml(flavor.name)}：${escapeHtml(options.join("、"))}`;
+      }).join("<br>");
+
+      return `
+        <article class="dish-card">
+          <img src="${escapeHtml(dish.image || "")}" alt="${escapeHtml(dish.name)}">
+          <div class="dish-body">
+            <div class="dish-title">
+              <span>${escapeHtml(dish.name)}</span>
+              <span class="price">¥${Number(dish.price).toFixed(2)}</span>
+            </div>
+            <div class="description">${escapeHtml(dish.description || "暂无描述")}</div>
+            <div class="flavors">${flavorText || "无额外口味"}</div>
+            <button class="add" data-id="${dish.id}">加入购物车</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    document.querySelectorAll(".add").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const dish = state.dishes.find(
+          (item) => item.id === Number(button.dataset.id)
+        );
+        let dishFlavor = "";
+        if (dish.flavors?.length) {
+          const firstFlavor = dish.flavors[0];
+          let options = [];
+          try {
+            options = JSON.parse(firstFlavor.value);
+          } catch {
+            options = [firstFlavor.value];
+          }
+          dishFlavor = `${firstFlavor.name}:${options[0] || ""}`;
+        }
+
+        try {
+          await api("/user/shoppingCart/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dishId: dish.id, dishFlavor })
+          });
+          await loadCart();
+          setMessage(`${dish.name} 已加入购物车`);
+        } catch (error) {
+          setMessage(error.message);
+        }
+      });
+    });
+  }
+
+  async function loadCart() {
+    const items = await api("/user/shoppingCart/list");
+    if (!items.length) {
+      $("#cartList").textContent = "购物车为空";
+      return;
+    }
+
+    $("#cartList").innerHTML = items.map((item) => `
+      <div class="cart-item">
+        <strong>${escapeHtml(item.name)}</strong>
+        <div class="cart-line">
+          <span>¥${Number(item.amount).toFixed(2)} × ${item.number}</span>
+          <button class="qty-button" data-dish="${item.dishId || ""}"
+                  data-setmeal="${item.setmealId || ""}"
+                  data-flavor="${escapeHtml(item.dishFlavor || "")}">−</button>
+        </div>
+        <div>${escapeHtml(item.dishFlavor || "")}</div>
+      </div>
+    `).join("");
+
+    document.querySelectorAll(".qty-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        try {
+          await api("/user/shoppingCart/sub", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              dishId: button.dataset.dish
+                ? Number(button.dataset.dish)
+                : null,
+              setmealId: button.dataset.setmeal
+                ? Number(button.dataset.setmeal)
+                : null,
+              dishFlavor: button.dataset.flavor || null
+            })
+          });
+          await loadCart();
+        } catch (error) {
+          setMessage(error.message);
+        }
+      });
+    });
+  }
+
+  async function clearCart() {
+    try {
+      await api("/user/shoppingCart/delete", { method: "DELETE" });
+      await loadCart();
+      setMessage("购物车已清空");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  function logout() {
+    state.token = null;
+    state.user = null;
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userInfo");
+    $("#loginBox").classList.remove("hidden");
+    $("#headerUser").textContent = "未登录";
+    $("#categories").innerHTML = "";
+    $("#dishes").innerHTML = "";
+    $("#cartList").textContent = "购物车为空";
+  }
+
+  $("#loginButton").addEventListener("click", login);
+  $("#clearCart").addEventListener("click", clearCart);
+
+  if (state.token && state.user) {
+    $("#loginBox").classList.add("hidden");
+    $("#headerUser").textContent = `用户 ${state.user.id}`;
+    loadCategories().then(loadCart).catch(() => logout());
+  }
+</script>
+</body>
+</html>

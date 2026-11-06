@@ -376,7 +376,7 @@ var _index = __webpack_require__(/*! @/utils/index.js */ 29);function _interopRe
     goOrder: function goOrder() {
       console.log('-=-=goOrder-=-=-');
       // TODO
-      uni.navigateTo({
+      uni.redirectTo({
         url: '/pages/historyOrder/historyOrder' });
 
     },

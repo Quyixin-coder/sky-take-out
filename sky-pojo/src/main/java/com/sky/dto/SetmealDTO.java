@@ -33,5 +33,5 @@ public class SetmealDTO implements Serializable {
 
     //套餐菜品关系
     private List<SetmealDish> setmealDishes = new ArrayList<>();
-
+                            //setmealDishes 是套餐包含的菜品列表。
 }

@@ -29,14 +29,16 @@ public interface EmployeeMapper {
             "(#{name},#{username},#{password},#{phone},#{sex},#{idNumber},#{createTime},#{updateTime},#{createUser},#{updateUser},#{status})")
     @AutoFill(value = OperationType.INSERT)
     void insert(Employee employee);
-
+                   //固定规则：@Insert：执行新增 SQL。- insert：方法名。
+                   //- Employee：把员工对象中的字段放进 SQL。
     /**
      * 分页查询
      * @param employeePageQueryDTO
      * @return
      */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
-
+                            //上面这一行固定规则：
+                            //MyBatis 会根据同名 XML 找到 pageQuery 对应的 SQL。
     /**
      * 根据主键动态修改属性
      * @param employee

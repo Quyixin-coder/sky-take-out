@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>苍穹外卖用户端测试</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f6f7;
+      color: #20242a;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+    main {
+      width: min(920px, calc(100% - 32px));
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, .08);
+      box-sizing: border-box;
+    }
+    h1 { margin-top: 0; }
+    .note {
+      padding: 12px 16px;
+      background: #fff7d6;
+      border-left: 4px solid #ffc200;
+      line-height: 1.7;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+    input, button {
+      font: inherit;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    input { flex: 1; min-width: 260px; border: 1px solid #ccd1d8; }
+    button {
+      border: 0;
+      background: #ffc200;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    button.secondary { background: #24272c; color: white; }
+    pre {
+      min-height: 180px;
+      overflow: auto;
+      padding: 16px;
+      background: #171a20;
+      color: #d8f7dc;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .status { font-weight: 700; margin: 12px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>苍穹外卖用户端测试</h1>
+  <p class="note">
+    这是本地开发测试页，不是正式顾客点餐页面。默认使用
+    <code>local:demo-user-001</code> 模拟微信 code。
+  </p>
+
+  <div class="row">
+    <input id="code" value="local:demo-user-001" aria-label="登录 code">
+    <button id="login">用户登录</button>
+  </div>
+
+  <div class="row">
+    <input id="categoryId" value="11" aria-label="分类编号">
+    <button class="secondary" id="loadDishes">查看该分类菜品</button>
+    <button class="secondary" id="clear">清除本地 token</button>
+  </div>
+
+  <div class="row">
+    <input id="dishId" value="70" aria-label="菜品编号">
+    <input id="dishFlavor" value="甜味" aria-label="菜品口味">
+    <button class="secondary" id="addCart">加入购物车</button>
+    <button class="secondary" id="showCart">查看购物车</button>
+    <button class="secondary" id="subCart">减少一份</button>
+    <button class="secondary" id="clearCart">清空购物车</button>
+  </div>
+
+  <div id="status" class="status">尚未登录</div>
+  <pre id="output">用户登录后，这里会显示接口返回结果。</pre>
+</main>
+<script>
+  const codeInput = document.querySelector("#code");
+  const categoryInput = document.querySelector("#categoryId");
+  const statusBox = document.querySelector("#status");
+  const output = document.querySelector("#output");
+
+  const show = (value) => {
+    output.textContent =
+      typeof value === "string"
+        ? value
+        : JSON.stringify(value, null, 2);
+  };
+
+  const getToken = () => localStorage.getItem("userToken");
+
+  document.querySelector("#login").addEventListener("click", async () => {
+    try {
+      const response = await fetch("/user/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: codeInput.value.trim() })
+      });
+
+      const result = await response.json();
+      if (result.code !== 1 || !result.data?.token) {
+        throw new Error(result.msg || "登录失败");
+      }
+
+      localStorage.setItem("userToken", result.data.token);
+      statusBox.textContent =
+        `登录成功：用户 ${result.data.id}，openid=${result.data.openid}`;
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "登录失败";
+      show(error.message);
+    }
+  });
+
+  document.querySelector("#loadDishes").addEventListener("click", async () => {
+    const token = getToken();
+    if (!token) {
+      statusBox.textContent = "请先登录";
+      return;
+    }
+
+    try {
+      const categoryId = encodeURIComponent(categoryInput.value.trim());
+      const response = await fetch(
+        `/user/dish/list?categoryId=${categoryId}`,
+        { headers: { authentication: token } }
+      );
+
+      if (response.status === 401) {
+        throw new Error("用户 token 无效或已经过期");
+      }
+
+      const result = await response.json();
+      statusBox.textContent = "菜品查询完成";
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "查询失败";
+      show(error.message);
+    }
+  });
+
+  document.querySelector("#clear").addEventListener("click", () => {
+    localStorage.removeItem("userToken");
+    statusBox.textContent = "本地 token 已清除";
+    show("已清除");
+  });
+
+  const cartRequest = async (url, options = {}) => {
+    const token = getToken();
+    if (!token) {
+      throw new Error("请先登录");
+    }
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        authentication: token
+      }
+    });
+
+    if (response.status === 401) {
+      throw new Error("用户 token 无效或已经过期");
+    }
+    return response.json();
+  };
+
+  const cartBody = () => ({
+    dishId: Number(document.querySelector("#dishId").value.trim()),
+    dishFlavor: document.querySelector("#dishFlavor").value.trim()
+  });
+
+  document.querySelector("#addCart").addEventListener("click", async () => {
+    try {
+      const result = await cartRequest("/user/shoppingCart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cartBody())
+      });
+      statusBox.textContent = "加入购物车完成";
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "加入购物车失败";
+      show(error.message);
+    }
+  });
+
+  document.querySelector("#showCart").addEventListener("click", async () => {
+    try {
+      const result = await cartRequest("/user/shoppingCart/list");
+      statusBox.textContent = "购物车查询完成";
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "购物车查询失败";
+      show(error.message);
+    }
+  });
+
+  document.querySelector("#subCart").addEventListener("click", async () => {
+    try {
+      const result = await cartRequest("/user/shoppingCart/sub", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cartBody())
+      });
+      statusBox.textContent = "购物车减少一份完成";
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "减少失败";
+      show(error.message);
+    }
+  });
+
+  document.querySelector("#clearCart").addEventListener("click", async () => {
+    try {
+      const result = await cartRequest("/user/shoppingCart/delete", {
+        method: "DELETE"
+      });
+      statusBox.textContent = "购物车已清空";
+      show(result);
+    } catch (error) {
+      statusBox.textContent = "清空购物车失败";
+      show(error.message);
+    }
+  });
+</script>
+</body>
+</html>

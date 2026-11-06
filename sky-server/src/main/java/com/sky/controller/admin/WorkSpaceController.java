@@ -31,10 +31,10 @@ public class WorkSpaceController {
     @GetMapping("/businessData")
     public Result<BusinessDataVO> businessData() {
         // 获得当天的开始时间
-        LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
-        // 获得当天的结束时间
-        LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
-
+        LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);// 获得当天的开始时间
+        // 获得当天的结束时间  今天 00:00:00 ～ 23:59:59
+        LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);// 获得当天的结束时间
+//Controller 不直接计算营业额，而是把时间区间交给 Service：
         BusinessDataVO businessDataVO = workspaceService.getBusinessData(begin, end);
         return Result.success(businessDataVO);
     }

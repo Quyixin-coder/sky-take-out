@@ -46,15 +46,15 @@ public class WorkspaceServiceImpl implements WorkspaceService {
          * 新增用户：当日新增用户的数量
          */
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();//这个Map最终会传给MyBatis，用于动态拼接 SQL
         map.put("begin", begin);
         map.put("end", end);
 
-        // 查询总订单数
+        // 查询总订单数  此时Map中没有 status，所以会查询今天所有状态的订单
         Integer totalOrderCount = orderMapper.countByMap(map);
 
         map.put("status", Orders.COMPLETED);
-        // 营业额
+        // 营业额   Orders.COMPLETED 是状态 5，表示订单已完成
         Double turnover = orderMapper.sumByMap(map);
         turnover = turnover == null ? 0.0 : turnover;
 
@@ -63,7 +63,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
         Double unitPrice = 0.0;
 
-        Double orderCompletionRate = 0.0;
+        Double orderCompletionRate = 0.0;//有效订单 ÷ 总订单 = 3 ÷ 0会发生除零错误
         if (totalOrderCount != 0 && validOrderCount != 0) {
             // 订单完成率
             orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount;
@@ -89,7 +89,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return
      */
     public OrderOverViewVO getOrderOverView() {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();//这个Map最终会传给MyBatis，用于动态拼接 SQL
         map.put("begin", LocalDateTime.now().with(LocalTime.MIN));
         map.put("status", Orders.TO_BE_CONFIRMED);
 

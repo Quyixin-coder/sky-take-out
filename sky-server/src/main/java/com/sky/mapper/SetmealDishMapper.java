@@ -16,13 +16,13 @@ public interface SetmealDishMapper {
      */
     //select setmeal_id from setmeal_dish where dish_id in (1,2,3,4)
     List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
-
+    //这个方法是接口，没有方法体  MyBatis 会根据同名 XML 找到 SQL
     /**
      * 批量保存套餐和菜品的关联关系
      *
      * @param setmealDishes
      */
-    void insertBatch(List<SetmealDish> setmealDishes);
+    void insertBatch(List<SetmealDish> setmealDishes);//批量插入新关系
 
     /**
      * 根据套餐id删除套餐和菜品的关联关系

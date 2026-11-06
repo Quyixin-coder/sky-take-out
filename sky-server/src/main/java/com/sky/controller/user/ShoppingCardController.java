@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user/shoppingCart")
-@Slf4j
+@Slf4j//日志
 @Api(tags = "C端-购物车接口")
 public class ShoppingCardController {
 
@@ -26,7 +26,7 @@ public class ShoppingCardController {
         return Result.success();
     }
 
-    @GetMapping("list")
+    @GetMapping("list") //Service 会从 BaseContext 获取当前用户
     @ApiOperation("查看购物车")
     public Result list() {
         return Result.success(shoppingCartService.showShoppingCart());
@@ -39,8 +39,8 @@ public class ShoppingCardController {
         return Result.success();
     }
 
-    @PostMapping("sub")
-    @ApiOperation("购物车-删除商品")
+    @PostMapping("sub")   //前端不需要传 userId 因为如果让前端传 userId，用户就能伪造别人的编号
+    @ApiOperation("购物车-删除商品")  //正确方式是后端从 JWT 中取得当前 userId
     public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO) {
         log.info("购物车-删除商品:{}", shoppingCartDTO);
         shoppingCartService.subShoppingCart(shoppingCartDTO);

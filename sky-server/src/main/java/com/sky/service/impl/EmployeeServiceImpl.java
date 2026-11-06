@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@Service
+@Service     //请 Spring 创建这个业务对象
 public class EmployeeServiceImpl implements EmployeeService {
-
-    @Autowired
+                           //这个类负责实现员工业务接口。
+    @Autowired  //请 Spring 把 Mapper 自动交给它使用。
     private EmployeeMapper employeeMapper;
 
     /**
@@ -68,15 +68,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void save(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
+        Employee employee = new Employee();// 创建一个 Employee 对象
 
         // 对象属性拷贝
-        BeanUtils.copyProperties(employeeDTO, employee);
+        BeanUtils.copyProperties(employeeDTO, employee);//固定工具 把 DTO 中同名字段复制到 Entity。
 
         // 设置账号状态
-        employee.setStatus(StatusConstant.ENABLE);
+        employee.setStatus(StatusConstant.ENABLE);//新员工默认启用
 
-        // 设置密码
+        // 设置密码  新员工的默认密码是 123456，数据库保存 MD5 指纹
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
 
         // 设置创建时间和修改时间
@@ -99,18 +99,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         long total = page.getTotal();
         List<Employee> result = page.getResult();
-
+//total：一共有多少名员工。
+//result：当前这一页的员工列表。
         return new PageResult(total, result);
     }
 
-    @Override
-    public void startOrStop(Integer status, Long id) {
+    @Override            //传过来的id=2 status = 0
+    public void startOrStop(Integer status, Long id) {  //updateTime = 当前时间
         Employee employee = Employee.builder()
                 .updateTime(LocalDateTime.now())
                 .id(id)
                 .status(status)
                 .build();
-        employeeMapper.update(employee);
+        employeeMapper.update(employee);  //然后交给 Mapper 修改
     }
 
     @Override
@@ -120,11 +121,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void update(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
-        employeeMapper.update(employee);
+        Employee employee = new Employee();// 创建一个 Employee 对象
+        BeanUtils.copyProperties(employeeDTO, employee);//把网页传来的字段复制进去
+        employee.setUpdateTime(LocalDateTime.now());//记录修改时间
+        employee.setUpdateUser(BaseContext.getCurrentId());//记录是谁修改的
+        employeeMapper.update(employee);//让 Mapper 执行数据库修改
     }
 
 }

@@ -44,6 +44,6 @@ public class SetmealVO implements Serializable {
     //分类名称
     private String categoryName;
 
-    //套餐和菜品的关联关系
+    //套餐和菜品的关联关系    用于保存套餐包含的多个菜品 不仅仅只包含套餐基本信息
     private List<SetmealDish> setmealDishes = new ArrayList<>();
 }

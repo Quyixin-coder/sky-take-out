@@ -24,15 +24,17 @@ public class ShopController {
      */
     @PutMapping("/{status}")
     @ApiOperation("设置店铺营业状态")
-    public Result setStatus(@PathVariable Integer status) {
+    public Result setStatus(@PathVariable Integer status) {// 修改店铺营业状态
         log.info("设置店铺营业状态:{}", status == 1 ? "营业" : "打烊");
-        redisTemplate.opsForValue().set("SHOP_STATUS", status);
-        return Result.success();
+        redisTemplate.opsForValue().set("SHOP_STATUS", status);// 修改成功后数据库不会发生变化，因为营业状态本来就不在 MySQL里面
+        return Result.success();//用户端和管理员端读取同一个 Redis Key：SHOP_STATUS
+
+
     }
 
-    @GetMapping("/status")
+    @GetMapping("/status")//管理员查询营业状态
     @ApiOperation("获取店铺营业状态")
-    public Result<Integer> getStatus() {
+    public Result<Integer> getStatus() {// 把 Redis 取出的 Object 转成 Integer
         Integer status = (Integer) redisTemplate.opsForValue().get("SHOP_STATUS");
         log.info("获取店铺营业状态:{}", status == 1 ? "营业" : "打烊");
         return Result.success(status);

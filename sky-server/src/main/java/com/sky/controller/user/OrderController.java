@@ -23,8 +23,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/submit")
-    @ApiOperation("用户下单")
-    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO dto) {
+    @ApiOperation("用户下单")//把小程序提交的 JSON 转换成 Java 的 OrdersSubmitDTO 对象//
+    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO dto) {//
         OrderSubmitVO orderSubmitVO = orderService.submitOrder(dto);
         return Result.success(orderSubmitVO);
     }
@@ -36,7 +36,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/payment")
-    @ApiOperation("订单支付")
+    @ApiOperation("订单支付")         //Controller 接收支付请求
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
         log.info("订单支付：{}", ordersPaymentDTO);

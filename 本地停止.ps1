@@ -42,6 +42,6 @@ $MySqlRuntime = Get-CimInstance Win32_Process |
     Where-Object { $_.Name -eq "mysqld.exe" -and $_.CommandLine -like "*mysql-local\my.ini*" }
 if ($MySqlRuntime) {
     & "D:\Program Files\MySQL\MySQL Server 8.0\bin\mysqladmin.exe" `
-        -u root --protocol=TCP -h 127.0.0.1 -P 3306 shutdown
+        -u root --protocol=TCP -h 127.0.0.1 -P 3307 shutdown
     Write-Host "[OK] Local MySQL stopped"
 }

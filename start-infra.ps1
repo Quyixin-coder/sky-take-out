@@ -47,7 +47,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $RedisRoot "redis-server.exe"))) {
     throw "Local Redis not found: $RedisRoot"
 }
 
-if (-not (Test-Port 3306)) {
+if (-not (Test-Port 3307)) {
     Start-Process `
         -FilePath (Join-Path $MySqlBase "bin\mysqld.exe") `
         -ArgumentList @("--defaults-file=$MySqlIni") `
@@ -56,7 +56,7 @@ if (-not (Test-Port 3306)) {
         -RedirectStandardOutput (Join-Path $LogRoot "mysql.out.log") `
         -RedirectStandardError (Join-Path $LogRoot "mysql.err.log")
 }
-Wait-Port 3306 "MySQL"
+Wait-Port 3307 "MySQL"
 
 if (-not (Test-Port 6379)) {
     Start-Process `

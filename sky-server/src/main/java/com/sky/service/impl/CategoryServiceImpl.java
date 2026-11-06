@@ -30,11 +30,11 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
-    private CategoryMapper categoryMapper;
+    private CategoryMapper categoryMapper;//操作 category 分类表
     @Autowired
-    private DishMapper dishMapper;
+    private DishMapper dishMapper;//操作 dish 菜品表
     @Autowired
-    private SetmealMapper setmealMapper;
+    private SetmealMapper setmealMapper;//操作 setmeal 套餐表
 
     /**
      * 新增分类
@@ -45,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
         //属性拷贝
         BeanUtils.copyProperties(categoryDTO, category);
 
-        //分类状态默认为禁用状态0
+        //分类状态默认为禁用状态0    新增分类默认为禁用状态，而员工是1启用
         category.setStatus(StatusConstant.DISABLE);
 
         //设置创建时间、修改时间、创建人、修改人
@@ -64,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
         PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
-        //下一条sql进行分页，自动加入limit关键字分页
+        //下一条sql进行分页，自动加入limit关键字分页        Service 仍然使用 PageHelper
         Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
     }
@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
      * 根据id删除分类
      * @param id
      */
-    public void deleteById(Long id) {
+    public void deleteById(Long id) {//Service 层的价值 不能一开始就删除分类，因为删除后才发现有关联数据就已经来不及了
         //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
         Integer count = dishMapper.countByCategoryId(id);
         if(count > 0){
@@ -87,9 +87,9 @@ public class CategoryServiceImpl implements CategoryService {
             //当前分类下有菜品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
         }
-
+        //只有前面两个数量都是 0，程序才会执行 到这里，才会删除分类数据
         //删除分类数据
-        categoryMapper.deleteById(id);
+        categoryMapper.deleteById(id);//接下来交给mapper
     }
 
     /**

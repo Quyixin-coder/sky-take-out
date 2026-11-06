@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Setmeal implements Serializable {
+public class Setmeal implements Serializable {//不包含套餐菜品列表
 
     private static final long serialVersionUID = 1L;
 

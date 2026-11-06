@@ -33,21 +33,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      *
      * @param shoppingCartDTO
      */
-    @Override
+    @Override      //这个Service判断购物车已有商品
     public void addShoppingCart(ShoppingCartDTO shoppingCartDTO) {
-        // 判断商品是否已经存在
-        ShoppingCart shoppingCart = new ShoppingCart();
-        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
-        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        ShoppingCart shoppingCart = new ShoppingCart();//创建ShoppingCart对象 完整路径：com.sky.entity.ShoppingCart.Java
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);      //将shoppingCartDTO中的属性复制到shoppingCart中
 
-        Long userId = BaseContext.getCurrentId();
-        shoppingCart.setUserId(userId);
+        Long userId = BaseContext.getCurrentId();//获取当前用户 如果没有userId可能查到其他用户购物车中的同款菜品
+        shoppingCart.setUserId(userId);      //设置当前用户id
+
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);//查询是否已有记录
 
         // 如果已经存在，将数量+1
         if (list != null && !list.isEmpty()) {
             ShoppingCart cart = list.get(0);
             cart.setNumber(cart.getNumber() + 1);
-            shoppingCartMapper.updateNumberById(cart);
+            shoppingCartMapper.updateNumberById(cart);//mapper写SQL 所以再次添加时不会创建重复行，只会增加 number
         } else {
             // 如果不存在，存入购物车中
             // 判断是菜品
@@ -68,6 +68,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 shoppingCart.setName(setmeal.getName());
                 shoppingCart.setImage(setmeal.getImage());
                 shoppingCart.setAmount(setmeal.getPrice());
+                shoppingCart.setCreateTime(LocalDateTime.now());
             }
             shoppingCartMapper.insert(shoppingCart);
         }
@@ -96,17 +97,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      *
      * @param shoppingCartDTO
      */
-    @Override
+    @Override// 减少一份的购物车Service 代码
     public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
         ShoppingCart shop = new ShoppingCart();
-        BeanUtils.copyProperties(shoppingCartDTO, shop);
-        List<ShoppingCart> list = shoppingCartMapper.list(shop);
+        BeanUtils.copyProperties(shoppingCartDTO, shop);// DTO 转 Entity
+        shop.setUserId(BaseContext.getCurrentId());//从 JWT 获取当前用户id
+        List<ShoppingCart> list = shoppingCartMapper.list(shop); //查询购物车记录
         if (list != null && !list.isEmpty()) {
-            ShoppingCart cart = list.get(0);
-            if (cart.getNumber() == 1) {
+            ShoppingCart cart = list.get(0);//取出对应购物车记录
+            if (cart.getNumber() == 1) {// 数量为1时删除整行
                 shoppingCartMapper.deleteById(cart.getId());
             } else {
-                cart.setNumber(cart.getNumber() - 1);
+                cart.setNumber(cart.getNumber() - 1);//数量大于1时减1
                 shoppingCartMapper.updateNumberById(cart);
             }
         }

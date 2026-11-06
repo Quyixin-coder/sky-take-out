@@ -32,7 +32,7 @@ public interface SetmealMapper {
      *
      * @param setmeal
      */
-    @AutoFill(OperationType.UPDATE)
+    @AutoFill(OperationType.UPDATE)  //@AutoFill 自动补充更新时间及更新人
     void update(Setmeal setmeal);
 
     /**
@@ -40,7 +40,7 @@ public interface SetmealMapper {
      *
      * @param setmeal
      */
-    @AutoFill(OperationType.INSERT)
+    @AutoFill(OperationType.INSERT)  //Spring AOP自动补充修改时间和修改人
     void insert(Setmeal setmeal);
 
     /**
@@ -56,7 +56,7 @@ public interface SetmealMapper {
      * @return
      */
     @Select("select * from setmeal where id = #{id}")
-    Setmeal getById(Long id);
+    Setmeal getById(Long id);   //返回Setmeal对象 不存在则返回null
 
     /**
      * 根据id删除套餐
@@ -98,4 +98,4 @@ public interface SetmealMapper {
 
     @Update("update setmeal set status = #{status} where id = #{id}")
     void startOrStop(Integer status, Long id);
-}
+}//这里只有一条 UPDATE SQL，没有跨多张表，因此当前 Service 不需要额外添加 @Transactional

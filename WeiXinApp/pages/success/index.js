@@ -195,13 +195,13 @@ var _vuex = __webpack_require__(/*! vuex */ 13);function ownKeys(object, enumera
     // 回首页
     goIndex: function goIndex() {
       // console.log(23)
-      uni.navigateTo({
+      uni.redirectTo({
         url: '/pages/index/index?status=' + '不验证' });
 
     },
     // 查看订单
     goOrder: function goOrder() {
-      uni.navigateTo({
+      uni.redirectTo({
         // url: '/pages/details/index?orderId=269'
         url: '/pages/details/index?orderId=' + this.orderId });
 

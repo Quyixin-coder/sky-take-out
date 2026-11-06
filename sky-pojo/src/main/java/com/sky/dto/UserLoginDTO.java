@@ -11,5 +11,7 @@ import java.io.Serializable;
 public class UserLoginDTO implements Serializable {
 
     private String code;
-
+//Spring MVC + Jackson  JSON 请求体
+                        //→ UserLoginDTO 对象
+                        //→ 读取 code
 }

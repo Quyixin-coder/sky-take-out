@@ -31,9 +31,9 @@ public class CategoryController {
      * @param categoryDTO
      * @return
      */
-    @PostMapping
-    @ApiOperation("新增分类")
-    public Result<String> save(@RequestBody CategoryDTO categoryDTO){
+    @PostMapping                   //接收新增请求
+    @ApiOperation("新增分类")         //接收json转成categoryDTO交给service
+    public Result<String> save(@RequestBody CategoryDTO categoryDTO){  //接收json转成categoryDTO交给service
         log.info("新增分类：{}", categoryDTO);
         categoryService.save(categoryDTO);
         return Result.success();
@@ -44,7 +44,7 @@ public class CategoryController {
      * @param categoryPageQueryDTO
      * @return
      */
-    @GetMapping("/page")
+    @GetMapping("/page")           //接受查询请求：GET /api/category/page?page=1&pageSize=10&name=&type=1
     @ApiOperation("分类分页查询")
     public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO){
         log.info("分页查询：{}", categoryPageQueryDTO);
@@ -57,13 +57,14 @@ public class CategoryController {
      * @param id
      * @return
      */
-    @DeleteMapping
+    @DeleteMapping               //删除接口，根据id删除分类
     @ApiOperation("删除分类")
     public Result<String> deleteById(Long id){
         log.info("删除分类：{}", id);
-        categoryService.deleteById(id);
-        return Result.success();
-    }
+        categoryService.deleteById(id);//Controller 把删除编号交给 Service
+        return Result.success();          //固定模板：
+                                        //如果 Service 没有抛异常，就告诉网页删除成功。
+            }
 
     /**
      * 修改分类

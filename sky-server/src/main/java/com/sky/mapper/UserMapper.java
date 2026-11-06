@@ -10,7 +10,7 @@ import java.util.Map;
 public interface UserMapper {
 
     /**
-     * 根据openid查询用户
+     * 根据openid查询用户      查询 user 表 插入新用户
      * @param openid
      * @return
      */

@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@Mapper
-public interface OrderMapper {
+@Mapper      //@Mapper`：这是 MyBatis 数据库接口
+             //接口没有方法体，MyBatis 会在运行时生成实现
+public interface OrderMapper {//MyBatis会在启动时生成代理对象，代你执行SQL
 
     /**
      * 插入订单数据

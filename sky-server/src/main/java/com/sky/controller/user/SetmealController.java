@@ -30,7 +30,7 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
-    @Cacheable(cacheNames = "setmealCache", key = "#categoryId")
+    @Cacheable(cacheNames = "setmealCache", key = "#categoryId")//先查缓存；缓存没有时才执行下面方法；方法执行后把返回值写入缓存。
     @ApiOperation("根据分类id查询套餐")
     public Result<List<Setmeal>> list(Long categoryId) {
         Setmeal setmeal = new Setmeal();

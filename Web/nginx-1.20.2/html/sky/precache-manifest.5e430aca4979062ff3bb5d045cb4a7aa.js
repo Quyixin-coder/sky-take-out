@@ -100,8 +100,12 @@ self.__precacheManifest = [
     "url": "media/reminder.0a3849af.mp3"
   },
   {
-    "revision": "1a82643b8f1ab45ccdc52c0a678dc975",
+    "revision": "sky-sound-unlock-20261105-v4",
     "url": "index.html"
+  },
+  {
+    "revision": "sky-sound-unlock-20261105-v4",
+    "url": "js/sound-unlock.js"
   },
   {
     "revision": "735ab4f94fbcd57074377afca324c813",

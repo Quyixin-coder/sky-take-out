@@ -22,14 +22,14 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/admin/report")
 @Slf4j
-public class ReportController {
+public class ReportController {//以下四个方法是四个统计接口的位置
 
     @Autowired
     private ReportService reportService;
 
     @GetMapping("/turnoverStatistics")
     public Result<TurnoverReportVO> turnoverStatistics(
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,//告诉 Spring把 URL 中的 2026-11-03 转成 LocalDate 对象
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         log.info("营业额统计：begin={}, end={}", begin, end);
         return Result.success(reportService.getTurnoverReport(begin, end));
@@ -88,4 +88,4 @@ public class ReportController {
     public void exportExcel(HttpServletResponse resp) {
         reportService.exportExcel(resp);
     }
-}
+}//HttpServletResponse 是什么  后端向浏览器写响应内容的工具。

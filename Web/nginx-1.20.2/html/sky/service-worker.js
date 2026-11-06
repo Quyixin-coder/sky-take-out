@@ -17,7 +17,15 @@ importScripts(
   "precache-manifest.5e430aca4979062ff3bb5d045cb4a7aa.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "vue-typescript-admin-template"});
+workbox.core.setCacheNameDetails({prefix: "sky-admin-sound-v4"});
+
+self.addEventListener("install", function () {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", function (event) {
+  event.waitUntil(self.clients.claim());
+});
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to

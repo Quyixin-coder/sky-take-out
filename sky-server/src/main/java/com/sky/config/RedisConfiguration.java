@@ -7,10 +7,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@Configuration
-@Slf4j
-public class RedisConfiguration {
-    @Bean
+@Configuration// 配置类
+@Slf4j// 日志
+public class RedisConfiguration {// Redis配置类
+    @Bean                // 创建redisTemplate对象   RedisTemplate 是 Spring 提供的 Redis 操作工具，类似 MyBatis 的Mapper
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         log.info("开始创建redisTemplate对象");
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();

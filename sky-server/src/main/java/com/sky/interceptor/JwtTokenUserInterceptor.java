@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * jwt令牌校验的拦截器
+ * jwt令牌校验的拦截器    检查后续请求是否携带合法用户 JWT令牌
  */
 @Component
 @Slf4j
@@ -34,8 +34,8 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
      * @throws Exception
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //判断当前拦截到的是Controller的方法还是其他资源
-        if (!(handler instanceof HandlerMethod)) {
+        //判断当前拦截到的是Controller的方法还是其他资源  preHandle表示方法执行之前进行拦截检查
+        if (!(handler instanceof HandlerMethod)) {//HandlerMethod 表示一个 Controller 方法
             //当前拦截到的不是动态方法，直接放行
             return true;
         }
@@ -52,11 +52,11 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             //3、通过，放行
 
             // 存储当前登录员工id
-            BaseContext.setCurrentId(userId);
+            BaseContext.setCurrentId(userId);//之后购物车 Service 可以通过：BaseContext.getCurrentId()知道当前是4号用户
 
             return true;
         } catch (Exception ex) {
-            //4、不通过，响应401状态码
+            //4、不通过，响应401状态码 并且不会进入用户端菜品 Controller
             response.setStatus(401);
             return false;
         }

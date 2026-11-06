@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-@Data
+@Data       //@Data 会自动生成所有字段的 get/set 方法
 public class SetmealPageQueryDTO implements Serializable {
 
     private int page;
